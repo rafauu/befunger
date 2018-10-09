@@ -57,11 +57,11 @@ void BefungeInterpreter::interpretCharacterOnCurrentPosition()
         case '*': multiply();                        break;
         case '/': divide();                          break;
         case '%': modulo();                          break;
-        case '!': /*tbd*/                            break;
+        case '!': negation();                        break;
         case '`': /*tbd*/                            break;
-        case ':': /*tbd*/                            break;
+        case ':': doubleLastNumberOnStack();         break;
         case '\\': /*tbd*/                           break;
-        case '$': /*tbd*/                            break;
+        case '$': discardLastElementFromStack();     break;
     }
 }
 
@@ -69,10 +69,10 @@ void BefungeInterpreter::makeMove(Direction direction)
 {
     switch(direction)
     {
-        case Direction::Right: currentPosition += Position{ 0, 1}; break;
-        case Direction::Left:  currentPosition += Position{ 0,-1}; break;
-        case Direction::Up:    currentPosition += Position{-1, 0}; break;
-        case Direction::Down:  currentPosition += Position{ 1, 0}; break;
+        case Direction::Right: currentPosition += { 0, 1}; break;
+        case Direction::Left:  currentPosition += { 0,-1}; break;
+        case Direction::Up:    currentPosition += {-1, 0}; break;
+        case Direction::Down:  currentPosition += { 1, 0}; break;
     }
 }
 
@@ -81,27 +81,30 @@ void BefungeInterpreter::changeDirection(Direction newDirection)
     currentDirection = newDirection;
 }
 
+auto BefungeInterpreter::getValueFromStackAndPopIt()
+{
+    auto value = stack.back();
+    stack.pop_back();
+    return value;
+}
+
 auto BefungeInterpreter::getTwoLastValuesFromStack()
 {
-    auto num1 = stack.back();
-    stack.pop_back();
-    auto num2 = stack.back();
-    stack.pop_back();
+    auto num1 = getValueFromStackAndPopIt();
+    auto num2 = getValueFromStackAndPopIt();
     return std::make_pair(num1, num2);
 }
 
 void BefungeInterpreter::changeDirectionHorizontally()
 {
-    auto num = stack.back();
-    stack.pop_back();
+    auto num = getValueFromStackAndPopIt();
     num == 0 ? changeDirection(Direction::Right)
              : changeDirection(Direction::Left);
 }
 
 void BefungeInterpreter::changeDirectionVertically()
 {
-    auto num = stack.back();
-    stack.pop_back();
+    auto num = getValueFromStackAndPopIt();
     num == 0 ? changeDirection(Direction::Down)
              : changeDirection(Direction::Up);
 }
@@ -134,6 +137,22 @@ void BefungeInterpreter::modulo()
 {
     auto [num1, num2] = getTwoLastValuesFromStack();
     stack.push_back(num1 % num2);
+}
+
+void BefungeInterpreter::negation()
+{
+    getValueFromStackAndPopIt() ? stack.push_back(0)
+                                : stack.push_back(1);
+}
+
+void BefungeInterpreter::doubleLastNumberOnStack()
+{
+    stack.push_back(stack.back());
+}
+
+void BefungeInterpreter::discardLastElementFromStack()
+{
+    stack.pop_back();
 }
 
 void BefungeInterpreter::displayGrid() const

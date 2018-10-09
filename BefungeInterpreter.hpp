@@ -20,6 +20,7 @@ private:
     void interpretCharacterOnCurrentPosition();
     void makeMove(Direction direction);
     void changeDirection(Direction newDirection);
+    auto getValueFromStackAndPopIt();
     auto getTwoLastValuesFromStack();
     void changeDirectionHorizontally();
     void changeDirectionVertically();
@@ -28,6 +29,10 @@ private:
     void multiply();
     void divide();
     void modulo();
+    void negation();
+    void doubleLastNumberOnStack();
+    void discardLastElementFromStack();
+
     void displayGrid() const;
     void displayStack() const;
 };
