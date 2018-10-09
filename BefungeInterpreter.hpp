@@ -21,6 +21,8 @@ private:
     void makeMove(Direction direction);
     void changeDirection(Direction newDirection);
     auto getTwoLastValuesFromStack();
+    void changeDirectionHorizontally();
+    void changeDirectionVertically();
     void add();
     void subtract();
     void multiply();

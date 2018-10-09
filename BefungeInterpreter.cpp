@@ -33,7 +33,11 @@ void BefungeInterpreter::interpretCharacterOnCurrentPosition()
 {
     const auto& [x, y] = currentPosition;
     char ch = grid[x][y];
-    if(isxdigit(ch)) stack.push_back(ch-'0');
+    if(isxdigit(ch))
+    {
+        stack.push_back(ch-'0');
+        return;
+    }
     switch(ch)
     {
         case ' ': /*nop*/                            break;
@@ -45,8 +49,8 @@ void BefungeInterpreter::interpretCharacterOnCurrentPosition()
         case '#': /*tbd*/                            break;
         case '@': exit(EXIT_SUCCESS);
 
-        case '_': /*tbd*/                            break;
-        case '|': /*tbd*/                            break;
+        case '_': changeDirectionHorizontally();     break;
+        case '|': changeDirectionVertically();       break;
 
         case '+': add();                             break;
         case '-': subtract();                        break;
@@ -84,6 +88,22 @@ auto BefungeInterpreter::getTwoLastValuesFromStack()
     auto num2 = stack.back();
     stack.pop_back();
     return std::make_pair(num1, num2);
+}
+
+void BefungeInterpreter::changeDirectionHorizontally()
+{
+    auto num = stack.back();
+    stack.pop_back();
+    num == 0 ? changeDirection(Direction::Right)
+             : changeDirection(Direction::Left);
+}
+
+void BefungeInterpreter::changeDirectionVertically()
+{
+    auto num = stack.back();
+    stack.pop_back();
+    num == 0 ? changeDirection(Direction::Down)
+             : changeDirection(Direction::Up);
 }
 
 void BefungeInterpreter::add()
