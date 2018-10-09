@@ -1,3 +1,4 @@
+#include "Parser.hpp"
 #include "BefungeInterpreter.hpp"
 #include <iostream>
 #include <utility>
@@ -5,13 +6,6 @@
 #include <thread>
 #include <cctype>
 #include <cstdlib>
-
-Position& operator+=(Position& lhs, const Position& rhs)
-{
-    lhs = std::make_pair(lhs.first + rhs.first,
-                         lhs.second + rhs.second);
-    return lhs;
-}
 
 enum class Direction
 {
@@ -21,18 +15,10 @@ enum class Direction
     Down
 };
 
-const std::map<Direction, Position> BefungeInterpreter::movementMatrix{{Direction::Right, Position{0,  1}},
-                                                                       {Direction::Left,  Position{0, -1}},
-                                                                       {Direction::Up,    Position{-1, 0}},
-                                                                       {Direction::Down,  Position{1,  0}}};
-
-BefungeInterpreter::BefungeInterpreter()
-: grid{{' ','>','>','v'},//add parser
-       {'@','v','7','7'},
-       {'@','v','7','4'},
-       {'^','<','+','<'}}
+BefungeInterpreter::BefungeInterpreter(Grid grid)
+: grid{grid}
 , stack{}
-, currentPosition{0, 0}
+, currentPosition{}
 , currentDirection{Direction::Right}
 {}
 
@@ -43,7 +29,7 @@ void BefungeInterpreter::run()
         displayGrid();
         displayStack();
         interpretCharacterOnCurrentPosition();
-        currentPosition += movementMatrix.at(currentDirection);
+        makeMove(currentDirection);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     };
 }
@@ -77,6 +63,17 @@ void BefungeInterpreter::interpretCharacterOnCurrentPosition()
         case ':': /*tbd*/                            break;
         case '\\': /*tbd*/                           break;
         case '$': /*tbd*/                            break;
+    }
+}
+
+void BefungeInterpreter::makeMove(Direction direction)
+{
+    switch(direction)
+    {
+        case Direction::Right: currentPosition += Position{ 0, 1}; break;
+        case Direction::Left:  currentPosition += Position{ 0,-1}; break;
+        case Direction::Up:    currentPosition += Position{-1, 0}; break;
+        case Direction::Down:  currentPosition += Position{ 1, 0}; break;
     }
 }
 
@@ -130,7 +127,7 @@ void BefungeInterpreter::displayGrid() const
     {
         for(auto j=0; j<grid[i].size(); ++j)
         {
-            std::cout << (std::make_pair(i,j) == currentPosition ? "\033[7m" : "\033[0m")
+            std::cout << (Position(i,j) == currentPosition ? "\033[7m" : "\033[0m")
                       << grid[i][j] << "\033[0m";
         }
         std::cout << std::endl;

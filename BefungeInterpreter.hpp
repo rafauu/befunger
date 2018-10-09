@@ -1,20 +1,20 @@
 #pragma once
+#include "Definitions.hpp"
+#include "Position.hpp"
 #include <vector>
 #include <map>
 
 enum class Direction;
-using Position = std::pair<int, int>;
 
 class BefungeInterpreter
 {
 public:
-    BefungeInterpreter();
+    BefungeInterpreter(Grid grid);
     void run();
 private:
-    using Grid = std::vector<std::vector<char>>;
     using Stack = std::vector<int>;
 
-    static const std::map<Direction, Position> movementMatrix;
+ //   static const std::map<Direction, Position> movementMatrix;
 
     Grid grid;
     Stack stack;
@@ -22,6 +22,7 @@ private:
     Direction currentDirection;
 
     void interpretCharacterOnCurrentPosition();
+    void makeMove(Direction direction);
     void changeDirection(Direction newDirection);
     auto getTwoLastValuesFromStack();
     void add();
