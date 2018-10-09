@@ -1,11 +1,6 @@
-#include "Parser.hpp"
 #include "BefungeInterpreter.hpp"
 #include <iostream>
-#include <utility>
-#include <chrono>
 #include <thread>
-#include <cctype>
-#include <cstdlib>
 
 enum class Direction
 {

@@ -1,7 +1,6 @@
 #pragma once
 #include "Definitions.hpp"
 #include <string>
-#include <vector>
 #include <cmath>
 #include <boost/range/irange.hpp>
 

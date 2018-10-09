@@ -1,8 +1,6 @@
 #pragma once
 #include "Definitions.hpp"
 #include "Position.hpp"
-#include <vector>
-#include <map>
 
 enum class Direction;
 
@@ -13,8 +11,6 @@ public:
     void run();
 private:
     using Stack = std::vector<int>;
-
- //   static const std::map<Direction, Position> movementMatrix;
 
     Grid grid;
     Stack stack;
