@@ -3,7 +3,7 @@
 
 int main()
 {
-    const std::string grid{" >>v"
+    const std::string grid{">#@v"
                            "@v77"
                            "@v74"
                            "^<+<"};

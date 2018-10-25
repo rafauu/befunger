@@ -16,7 +16,7 @@ public:
         auto parsedGridSize{sqrt(entryGrid.size())};
         Grid parsedGrid(parsedGridSize);
 
-        for(auto i : boost::irange(0lu,entryGrid.size()))
+        for(auto i : boost::irange(0lu, entryGrid.size()))
         {
             parsedGrid[i/parsedGridSize].push_back(entryGrid[i]);
         }

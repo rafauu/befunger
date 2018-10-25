@@ -1,25 +1,30 @@
 #pragma once
 #include "Definitions.hpp"
-#include "Position.hpp"
+#include <memory>
 
 enum class Direction;
+class Position;
 
 class BefungeInterpreter
 {
 public:
     BefungeInterpreter(Grid grid);
+    ~BefungeInterpreter();
     void run();
 private:
     using Stack = std::vector<int>;
 
     Grid grid;
     Stack stack;
-    Position currentPosition;
+    std::unique_ptr<Position> currentPosition;
     Direction currentDirection;
+    bool inputModeStatus;
 
     void interpretCharacterOnCurrentPosition();
     void makeMove(Direction direction);
     void changeDirection(Direction newDirection);
+    void chooseRandomDirection();
+    void ignoreNextInstruction();
     auto getValueFromStackAndPopIt();
     auto getTwoLastValuesFromStack();
     void changeDirectionHorizontally();
@@ -30,8 +35,13 @@ private:
     void divide();
     void modulo();
     void negation();
+    void firstIsGreaterThanSecond();
     void doubleLastNumberOnStack();
+    void swapTwoLastElements();
     void discardLastElementFromStack();
+    void toggleInputModeStatus();
+    void printNumberFromStack();
+    void printCharFromStack();
 
     void displayGrid() const;
     void displayStack() const;
