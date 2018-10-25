@@ -250,5 +250,4 @@ void BefungeInterpreter::displayStack() const
               stack.cend(),
               std::ostream_iterator<Stack::value_type>(std::cout, " "));
     std::cout << std::endl;
-//    std::cout << std::endl << std::endl;
 }
