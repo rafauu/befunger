@@ -1,7 +1,6 @@
 #pragma once
 #include "Definitions.hpp"
 #include <string>
-#include <cmath>
 #include <boost/range/irange.hpp>
 
 class Parser
@@ -9,14 +8,15 @@ class Parser
 public:
     Parser() = default;
 
-    Grid parse(const std::string entryGrid)
+    Grid parse(const std::vector<std::string> entryGrid)
     {
-        auto parsedGridSize{sqrt(entryGrid.size())};
-        Grid parsedGrid(parsedGridSize);
-
-        for(auto i : boost::irange(0lu, entryGrid.size()))
+        Grid parsedGrid(entryGrid.size());
+        for(auto i : boost::irange(0lu, parsedGrid.size()))
         {
-            parsedGrid[i/parsedGridSize].push_back(entryGrid[i]);
+            for(const auto& sign : entryGrid[i])
+            {
+                parsedGrid[i].push_back(sign);
+            }
         }
         return parsedGrid;
     }

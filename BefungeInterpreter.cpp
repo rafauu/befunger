@@ -21,6 +21,7 @@ BefungeInterpreter::BefungeInterpreter(Grid grid)
 , currentPosition{std::make_unique<Position>()}
 , currentDirection{Direction::Right}
 , inputModeStatus{false}
+, nextInstructionShouldBeIgnored{false}
 {}
 
 BefungeInterpreter::~BefungeInterpreter() = default;
@@ -29,11 +30,11 @@ void BefungeInterpreter::run()
 {
     while(true)
     {
-        displayGrid();
         displayStack();
+        displayGrid();
         interpretCharacterOnCurrentPosition();
         makeMove(currentDirection);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     };
 }
 
@@ -41,14 +42,26 @@ void BefungeInterpreter::interpretCharacterOnCurrentPosition()
 {
     const auto& [x, y] = *currentPosition;
     char ch = grid[x][y];
+
+    if(' ' == ch)
+    {
+        return;
+    }
+
+    if(nextInstructionShouldBeIgnored)
+    {
+        nextInstructionShouldBeIgnored = false;
+        return;
+    }
+
     if(isxdigit(ch) or inputModeStatus)
     {
         stack.push_back(ch-'0');
         return;
     }
+
     switch(ch)
     {
-        case ' ': /*nop*/                            break;
         case '>': changeDirection(Direction::Right); break;
         case '<': changeDirection(Direction::Left);  break;
         case '^': changeDirection(Direction::Up);    break;
@@ -112,7 +125,7 @@ void BefungeInterpreter::chooseRandomDirection()
 
 void BefungeInterpreter::ignoreNextInstruction()
 {
-    makeMove(currentDirection);
+    nextInstructionShouldBeIgnored = true;
 }
 
 auto BefungeInterpreter::getValueFromStackAndPopIt()
@@ -236,5 +249,6 @@ void BefungeInterpreter::displayStack() const
     std::copy(stack.cbegin(),
               stack.cend(),
               std::ostream_iterator<Stack::value_type>(std::cout, " "));
-    std::cout << std::endl << std::endl;
+    std::cout << std::endl;
+//    std::cout << std::endl << std::endl;
 }

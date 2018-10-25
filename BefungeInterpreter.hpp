@@ -19,6 +19,7 @@ private:
     std::unique_ptr<Position> currentPosition;
     Direction currentDirection;
     bool inputModeStatus;
+    bool nextInstructionShouldBeIgnored;
 
     void interpretCharacterOnCurrentPosition();
     void makeMove(Direction direction);
