@@ -7,11 +7,9 @@
 class Parser
 {
 public:
-    Parser(const std::string entryGrid)
-    : entryGrid(entryGrid)
-    {}
+    Parser() = default;
 
-    Grid parse()
+    Grid parse(const std::string entryGrid)
     {
         auto parsedGridSize{sqrt(entryGrid.size())};
         Grid parsedGrid(parsedGridSize);
@@ -22,6 +20,4 @@ public:
         }
         return parsedGrid;
     }
-private:
-    std::string entryGrid;
 };
