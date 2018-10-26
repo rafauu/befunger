@@ -42,6 +42,10 @@ private:
     void toggleInputModeStatus();
     void printNumberFromStack();
     void printCharFromStack();
+    void inputAsNumber();
+    void inputAsChar();
+    void getSignFromGridUsingTwoLastValuesFromStackAsCoordinates();
+    void putSignToGridUsingTwoLastValuesFromStackAsCoordinates();
 
     void displayGrid() const;
     void displayStack() const;

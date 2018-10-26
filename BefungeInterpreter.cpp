@@ -33,14 +33,14 @@ void BefungeInterpreter::run()
         displayGrid();
         interpretCharacterOnCurrentPosition();
         makeMove(currentDirection);
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     };
 }
 
 void BefungeInterpreter::interpretCharacterOnCurrentPosition()
 {
     const auto& [x, y] = currentPosition;
-    char ch = grid[x][y];
+    auto ch = grid[x][y];
 
     if(' ' == ch)
     {
@@ -61,36 +61,36 @@ void BefungeInterpreter::interpretCharacterOnCurrentPosition()
 
     switch(ch)
     {
-        case '>': changeDirection(Direction::Right); break;
-        case '<': changeDirection(Direction::Left);  break;
-        case '^': changeDirection(Direction::Up);    break;
-        case 'v': changeDirection(Direction::Down);  break;
-        case '?': chooseRandomDirection();           break;
-        case '#': ignoreNextInstruction();           break;
+        case '>': changeDirection(Direction::Right);                         break;
+        case '<': changeDirection(Direction::Left);                          break;
+        case '^': changeDirection(Direction::Up);                            break;
+        case 'v': changeDirection(Direction::Down);                          break;
+        case '?': chooseRandomDirection();                                   break;
+        case '#': ignoreNextInstruction();                                   break;
         case '@': exit(EXIT_SUCCESS);
 
-        case '_': changeDirectionHorizontally();     break;
-        case '|': changeDirectionVertically();       break;
+        case '_': changeDirectionHorizontally();                             break;
+        case '|': changeDirectionVertically();                               break;
 
-        case '+': add();                             break;
-        case '-': subtract();                        break;
-        case '*': multiply();                        break;
-        case '/': divide();                          break;
-        case '%': modulo();                          break;
-        case '!': negation();                        break;
-        case '`': firstIsGreaterThanSecond();        break;
-        case ':': doubleLastNumberOnStack();         break;
-        case '\\':swapTwoLastElements();             break;
-        case '$': discardLastElementFromStack();     break;
+        case '+': add();                                                     break;
+        case '-': subtract();                                                break;
+        case '*': multiply();                                                break;
+        case '/': divide();                                                  break;
+        case '%': modulo();                                                  break;
+        case '!': negation();                                                break;
+        case '`': firstIsGreaterThanSecond();                                break;
+        case ':': doubleLastNumberOnStack();                                 break;
+        case '\\':swapTwoLastElements();                                     break;
+        case '$': discardLastElementFromStack();                             break;
 
-        case '"': toggleInputModeStatus();           break;
-        case '.': printNumberFromStack();            break;
-        case ',': printCharFromStack();              break;
-        case '&': /*tbd*/     break;
-        case '~': /*tbd*/     break;
+        case '"': toggleInputModeStatus();                                   break;
+        case '.': printNumberFromStack();                                    break;
+        case ',': printCharFromStack();                                      break;
+        case '&': inputAsNumber();                                           break;
+        case '~': inputAsChar();                                             break;
 
-        case 'g': /*tbd*/     break;
-        case 'p': /*tbd*/     break;
+        case 'g': getSignFromGridUsingTwoLastValuesFromStackAsCoordinates(); break;
+        case 'p': putSignToGridUsingTwoLastValuesFromStackAsCoordinates();   break;
 
         default: break;
     }
@@ -250,6 +250,33 @@ void BefungeInterpreter::printNumberFromStack()
 void BefungeInterpreter::printCharFromStack()
 {
     std::cout << (getValueFromStackAndPopIt() + '0');
+}
+
+void BefungeInterpreter::inputAsNumber()
+{
+    Stack::value_type num;
+    std::cin >> num;
+    stack.push_back(num);
+}
+
+void BefungeInterpreter::inputAsChar()
+{
+    Grid::value_type::value_type ch;
+    std::cin >> ch;
+    stack.push_back(ch);
+}
+
+void BefungeInterpreter::getSignFromGridUsingTwoLastValuesFromStackAsCoordinates()
+{
+    auto [x, y] = getTwoLastValuesFromStack();
+    stack.push_back(grid[x][y]);
+}
+
+void BefungeInterpreter::putSignToGridUsingTwoLastValuesFromStackAsCoordinates()
+{
+    auto [x, y] = getTwoLastValuesFromStack();
+    auto ch = getValueFromStackAndPopIt();
+    grid[x][y] = ch;
 }
 
 void BefungeInterpreter::displayGrid() const
