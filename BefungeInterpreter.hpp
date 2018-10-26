@@ -1,9 +1,8 @@
 #pragma once
 #include "Definitions.hpp"
-#include <memory>
+#include "Position.hpp"
 
 enum class Direction;
-class Position;
 
 class BefungeInterpreter
 {
@@ -16,7 +15,7 @@ private:
 
     Grid grid;
     Stack stack;
-    std::unique_ptr<Position> currentPosition;
+    Position currentPosition;
     Direction currentDirection;
     bool inputModeStatus;
     bool nextInstructionShouldBeIgnored;

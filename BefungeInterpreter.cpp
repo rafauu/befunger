@@ -1,5 +1,4 @@
 #include "BefungeInterpreter.hpp"
-#include "Position.hpp"
 #include <iostream>
 #include <iterator>
 #include <thread>
@@ -18,7 +17,7 @@ enum class Direction
 BefungeInterpreter::BefungeInterpreter(Grid grid)
 : grid{grid}
 , stack{}
-, currentPosition{std::make_unique<Position>()}
+, currentPosition{}
 , currentDirection{Direction::Right}
 , inputModeStatus{false}
 , nextInstructionShouldBeIgnored{false}
@@ -40,7 +39,7 @@ void BefungeInterpreter::run()
 
 void BefungeInterpreter::interpretCharacterOnCurrentPosition()
 {
-    const auto& [x, y] = *currentPosition;
+    const auto& [x, y] = currentPosition;
     char ch = grid[x][y];
 
     if(' ' == ch)
@@ -101,10 +100,10 @@ void BefungeInterpreter::makeMove(Direction direction)
 {
     switch(direction)
     {
-        case Direction::Right: *currentPosition += { 0, 1}; break;
-        case Direction::Left:  *currentPosition += { 0,-1}; break;
-        case Direction::Up:    *currentPosition += {-1, 0}; break;
-        case Direction::Down:  *currentPosition += { 1, 0}; break;
+        case Direction::Right: currentPosition += { 0, 1}; break;
+        case Direction::Left:  currentPosition += { 0,-1}; break;
+        case Direction::Up:    currentPosition += {-1, 0}; break;
+        case Direction::Down:  currentPosition += { 1, 0}; break;
         default: break;
     }
 }
@@ -144,14 +143,26 @@ auto BefungeInterpreter::getTwoLastValuesFromStack()
 
 void BefungeInterpreter::changeDirectionHorizontally()
 {
-    getValueFromStackAndPopIt() ? changeDirection(Direction::Left)
-                                : changeDirection(Direction::Right);
+    if(getValueFromStackAndPopIt())
+    {
+        changeDirection(Direction::Left);
+    }
+    else
+    {
+        changeDirection(Direction::Right);
+    }
 }
 
 void BefungeInterpreter::changeDirectionVertically()
 {
-    getValueFromStackAndPopIt() ? changeDirection(Direction::Up)
-                                : changeDirection(Direction::Down);
+    if(getValueFromStackAndPopIt())
+    {
+        changeDirection(Direction::Up);
+    }
+    else
+    {
+        changeDirection(Direction::Down);
+    }
 }
 
 void BefungeInterpreter::add()
@@ -186,15 +197,27 @@ void BefungeInterpreter::modulo()
 
 void BefungeInterpreter::negation()
 {
-    getValueFromStackAndPopIt() ? stack.push_back(0)
-                                : stack.push_back(1);
+    if(getValueFromStackAndPopIt())
+    {
+        stack.push_back(0);
+    }
+    else
+    {
+        stack.push_back(1);
+    }
 }
 
 void BefungeInterpreter::firstIsGreaterThanSecond()
 {
     auto [num1, num2] = getTwoLastValuesFromStack();
-    num1 > num2 ? stack.push_back(1)
-                : stack.push_back(0);
+    if(num1 > num2)
+    {
+        stack.push_back(1);
+    }
+    else
+    {
+        stack.push_back(0);
+    }
 }
 
 void BefungeInterpreter::doubleLastNumberOnStack()
@@ -236,8 +259,8 @@ void BefungeInterpreter::displayGrid() const
         for(auto j=0; j<grid[i].size(); ++j)
         {
             auto ch = grid[i][j];
-            Position(i, j) == *currentPosition ? std::cout << "\033[7m" << ch << "\033[0m"
-                                               : std::cout << ch;
+            Position(i, j) == currentPosition ? std::cout << "\033[7m" << ch << "\033[0m"
+                                              : std::cout << ch;
         }
         std::cout << std::endl;
     }

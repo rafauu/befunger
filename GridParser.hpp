@@ -8,7 +8,7 @@ class GridParser
 public:
     GridParser() = default;
 
-    Grid read(std::string filename)
+    Grid read(const std::string& filename)
     {
         Grid grid;
         std::string tempLine;
@@ -17,12 +17,8 @@ public:
         while(file)
         {
             std::getline(file, tempLine);
-            Grid::value_type tempVec;
-            for(auto ch : tempLine)
-            {
-                tempVec.push_back(ch);
-            }
-            grid.push_back(tempVec);
+            grid.emplace_back(Grid::value_type(tempLine.cbegin(),
+                                               tempLine.cend()));
         }
         return grid;
     }
