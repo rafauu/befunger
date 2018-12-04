@@ -14,9 +14,8 @@ public:
         std::string tempLine;
         std::ifstream file(filename);
 
-        while(file)
+        while(std::getline(file, tempLine))
         {
-            std::getline(file, tempLine);
             grid.emplace_back(Grid::value_type(tempLine.cbegin(),
                                                tempLine.cend()));
         }

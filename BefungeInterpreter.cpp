@@ -16,6 +16,7 @@ enum class Direction
 
 BefungeInterpreter::BefungeInterpreter(Grid grid)
 : grid{grid}
+, output{}
 , stack{}
 , currentPosition{}
 , currentDirection{Direction::Right}
@@ -31,19 +32,27 @@ void BefungeInterpreter::run()
     {
         displayStack();
         displayGrid();
+        displayOutput();
+
         interpretCharacterOnCurrentPosition();
         makeMove(currentDirection);
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(30));
     };
 }
 
 void BefungeInterpreter::interpretCharacterOnCurrentPosition()
 {
     const auto& [x, y] = currentPosition;
-    auto ch = grid[x][y];
+    auto ch = grid.at(x).at(y);
 
-    if(' ' == ch)
+    if(' ' == ch and not inputModeStatus)
     {
+        return;
+    }
+
+    if('"' == ch)
+    {
+        toggleInputModeStatus();
         return;
     }
 
@@ -53,7 +62,13 @@ void BefungeInterpreter::interpretCharacterOnCurrentPosition()
         return;
     }
 
-    if(isxdigit(ch) or inputModeStatus)
+    if(inputModeStatus)
+    {
+        stack.push_back(ch);
+        return;
+    }
+
+    if(isdigit(ch))
     {
         stack.push_back(ch-'0');
         return;
@@ -83,7 +98,6 @@ void BefungeInterpreter::interpretCharacterOnCurrentPosition()
         case '\\':swapTwoLastElements();                                     break;
         case '$': discardLastElementFromStack();                             break;
 
-        case '"': toggleInputModeStatus();                                   break;
         case '.': printNumberFromStack();                                    break;
         case ',': printCharFromStack();                                      break;
         case '&': inputAsNumber();                                           break;
@@ -106,6 +120,10 @@ void BefungeInterpreter::makeMove(Direction direction)
         case Direction::Down:  currentPosition += { 1, 0}; break;
         default: break;
     }
+    if(currentPosition.x == -1) currentPosition.x = grid.size() - 1;
+    if(currentPosition.y == -1) currentPosition.y = grid[0].size() - 1;
+    if(currentPosition.x == grid.size()) currentPosition.x = 0;
+    if(currentPosition.y == grid[0].size()) currentPosition.y = 0;
 }
 
 void BefungeInterpreter::changeDirection(Direction newDirection)
@@ -168,31 +186,31 @@ void BefungeInterpreter::changeDirectionVertically()
 void BefungeInterpreter::add()
 {
     auto [num1, num2] = getTwoLastValuesFromStack();
-    stack.push_back(num1 + num2);
+    stack.push_back(num2 + num1);
 }
 
 void BefungeInterpreter::subtract()
 {
     auto [num1, num2] = getTwoLastValuesFromStack();
-    stack.push_back(num1 - num2);
+    stack.push_back(num2 - num1);
 }
 
 void BefungeInterpreter::multiply()
 {
     auto [num1, num2] = getTwoLastValuesFromStack();
-    stack.push_back(num1 * num2);
+    stack.push_back(num2 * num1);
 }
 
 void BefungeInterpreter::divide()
 {
     auto [num1, num2] = getTwoLastValuesFromStack();
-    stack.push_back(num1 / num2);
+    stack.push_back(num2 / num1);
 }
 
 void BefungeInterpreter::modulo()
 {
     auto [num1, num2] = getTwoLastValuesFromStack();
-    stack.push_back(num1 % num2);
+    stack.push_back(num2 % num1);
 }
 
 void BefungeInterpreter::negation()
@@ -210,7 +228,7 @@ void BefungeInterpreter::negation()
 void BefungeInterpreter::firstIsGreaterThanSecond()
 {
     auto [num1, num2] = getTwoLastValuesFromStack();
-    if(num1 > num2)
+    if(num2 > num1)
     {
         stack.push_back(1);
     }
@@ -244,12 +262,12 @@ void BefungeInterpreter::toggleInputModeStatus()
 
 void BefungeInterpreter::printNumberFromStack()
 {
-    std::cout << getValueFromStackAndPopIt();
+    output += std::to_string(getValueFromStackAndPopIt());
 }
 
 void BefungeInterpreter::printCharFromStack()
 {
-    std::cout << (getValueFromStackAndPopIt() + '0');
+    output += static_cast<char>(getValueFromStackAndPopIt());
 }
 
 void BefungeInterpreter::inputAsNumber()
@@ -300,4 +318,9 @@ void BefungeInterpreter::displayStack() const
               stack.cend(),
               std::ostream_iterator<Stack::value_type>(std::cout, " "));
     std::cout << std::endl;
+}
+
+void BefungeInterpreter::displayOutput() const
+{
+    std::cout << "Output: " << output << std::endl;
 }

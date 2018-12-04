@@ -1,6 +1,7 @@
 #pragma once
 #include "Definitions.hpp"
 #include "Position.hpp"
+#include <string>
 
 enum class Direction;
 
@@ -15,6 +16,7 @@ private:
 
     Grid grid;
     Stack stack;
+    std::string output;
     Position currentPosition;
     Direction currentDirection;
     bool inputModeStatus;
@@ -49,4 +51,5 @@ private:
 
     void displayGrid() const;
     void displayStack() const;
+    void displayOutput() const;
 };
